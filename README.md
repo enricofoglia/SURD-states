@@ -8,7 +8,7 @@ future states. The effectiveness of the proposed approach stems from two key fea
 to characterize causal influence as a function of the system state, and its capacity to distinguish
 both redundant and synergistic effects among variables. The formulation is non-intrusive and requires only pairs of past and future events, facilitating its application in both computational and experimental investigations. The method also identifies the amount of causality that remains unaccounted for due to unobserved variables. The approach can be used to detect causal relationships in systems with multiple variables, dependencies at different time lags, and instantaneous links.
 
-<img width="1117" alt="fig_surd_states" src="https://github.com/user-attachments/assets/ec95e19b-cd90-4881-9d77-eddd334e572d" />
+<img width="4499" height="1031" alt="fig_method_states_v1" src="https://github.com/user-attachments/assets/6b04b6e7-78f0-4751-bd65-e6347ae48a6c" />
 
 ## System requirements
 
