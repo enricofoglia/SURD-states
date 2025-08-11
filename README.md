@@ -1,4 +1,4 @@
-# Decomposition of causality by states
+# Decomposition of observational causality by states and interaction type
 
 _A Python repository for decomposing synergistic, unique, and redundant causalities by states._
 
@@ -12,7 +12,7 @@ both redundant and synergistic effects among variables. The formulation is non-i
 
 ## System requirements
 
-SURD is designed to operate efficiently on standard computing systems. However, the computational demands increase with the complexity of the probability density functions being estimated. To ensure optimal performance, we recommend a minimum of 16 GB of RAM and a quad-core processor with a clock speed of at least 3.3 GHz per core. The performance metrics provided in this repository are based on tests conducted on macOS with an ARM64 architecture and 16 GB of RAM, and on Linux systems running Red Hat version 8.8-0.8. These configurations have demonstrated sufficient performance for the operations utilized by SURD. Users should consider equivalent or superior specifications to achieve similar performance.
+The method is designed to operate efficiently on standard computing systems. However, the computational demands increase with the complexity of the probability density functions being estimated. To ensure optimal performance, we recommend a minimum of 16 GB of RAM and a quad-core processor with a clock speed of at least 3.3 GHz per core. The performance metrics provided in this repository are based on tests conducted on macOS with an ARM64 architecture and 16 GB of RAM, and on Linux systems running Red Hat version 8.8-0.8. These configurations have demonstrated sufficient performance for the operations utilized by SURD. Users should consider equivalent or superior specifications to achieve similar performance.
 
 ## Getting started
 
@@ -27,21 +27,16 @@ conda activate surd
 
 ## Citation
 
-If you use SURD in your research or software, please cite the following paper:
+If you use our method in your research or software, please cite the following paper:
 
 ```bibtex
-@article{surd,
-author={Mart{\'\i}nez-S{\'a}nchez, {\'A}lvaro and Arranz, Gonzalo and Lozano-Dur{\'a}n, Adri{\'a}n},
-title={Decomposing causality into its synergistic, unique, and redundant components},
-journal={Nature Communications},
-year={2024},
-month={Nov},
-day={01},
-volume={15},
-number={1},
-pages={9296},
-issn={2041-1723},
-doi={10.1038/s41467-024-53373-4}
+@misc{states2025,
+author={Mart{\'\i}nez-S{\'a}nchez, {\'A}lvaro and Lozano-Dur{\'a}n, Adri{\'a}n},
+title={Observational causality by states and interaction type for scientific discovery},
+archivePrefix={arXiv},
+primaryClass={physics.data-an},
+eprint={2505.10878},
+year={2025}
 }
 ```
 
