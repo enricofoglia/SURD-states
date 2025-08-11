@@ -31,8 +31,8 @@ If you use our method in your research or software, please cite the following pa
 
 ```bibtex
 @misc{states2025,
-author={Mart{\'\i}nez-S{\'a}nchez, {\'A}lvaro and Lozano-Dur{\'a}n, Adri{\'a}n},
 title={Observational causality by states and interaction type for scientific discovery},
+author={Mart{\'\i}nez-S{\'a}nchez, {\'A}lvaro and Lozano-Dur{\'a}n, Adri{\'a}n},
 archivePrefix={arXiv},
 primaryClass={physics.data-an},
 eprint={2505.10878},
