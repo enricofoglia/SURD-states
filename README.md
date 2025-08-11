@@ -1,4 +1,4 @@
-# Decomposition of observational causality by states and interaction type
+# Decomposition of causality by states and interaction type
 
 _A Python repository for decomposing synergistic, unique, and redundant causalities by states._
 
