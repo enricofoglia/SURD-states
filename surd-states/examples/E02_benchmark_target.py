@@ -7,13 +7,12 @@ app = marimo.App()
 @app.cell
 def _():
     import os, sys
-    sys.path.append(os.path.abspath('../utils'))
 
     import numpy as np # type: ignore
     import matplotlib.pyplot as plt # type: ignore
     import matplotlib.colors as mcolors # type: ignore
-    import analytic_eqs as cases # type: ignore
-    import surd as surd # type: ignore
+    from surd_states import analytic_eqs as cases # type: ignore
+    from surd_states import surd as surd # type: ignore
     from matplotlib.colors import LinearSegmentedColormap
     np.random.seed(10)
 
@@ -234,4 +233,3 @@ def _(Sy_results, bins_1, my_colors, np, surd, sy_states_results):
 
 if __name__ == "__main__":
     app.run()
-

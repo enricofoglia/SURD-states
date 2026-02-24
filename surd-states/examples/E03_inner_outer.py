@@ -7,16 +7,15 @@ app = marimo.App()
 @app.cell
 def _():
     import os, sys, pymp
-    sys.path.append(os.path.abspath('../utils'))
 
     import numpy as np # type: ignore
     import scipy.io as sio
     import matplotlib.pyplot as plt # type: ignore
     import matplotlib.colors as mcolors # type: ignore
-    import analytic_eqs as cases # type: ignore
-    import surd as surd # type: ignore
+    from surd_states import analytic_eqs as cases # type: ignore
+    from surd_states import surd as surd # type: ignore
     from matplotlib.colors import LinearSegmentedColormap
-    import it_tools as it # type: ignore
+    from surd_states import it_tools as it # type: ignore
     np.random.seed(10)
 
     # Configure matplotlib to use LaTeX for text rendering and set font size
@@ -250,4 +249,3 @@ def _(
 
 if __name__ == "__main__":
     app.run()
-

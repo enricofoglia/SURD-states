@@ -6,8 +6,9 @@ app = marimo.App()
 
 @app.cell
 def _():
-    import os, sys
-    sys.path.append(os.path.abspath('../utils'))
+    import os
+
+    import marimo as mo # type: ignore
 
     import numpy as np # type: ignore
     import matplotlib.pyplot as plt # type: ignore
@@ -37,6 +38,7 @@ def _():
     return (
         LinearSegmentedColormap,
         cases,
+        mo,
         my_colors,
         my_gray,
         np,
@@ -56,7 +58,7 @@ def _():
 
 
 @app.cell
-def _(Nt, cases, np, os, samples):
+def _(Nt, cases, mo, np, os, samples):
     # Define paths for saving/loading data for each system
     formatted_Nt = "{:.0e}".format(Nt).replace("+0", "").replace("+", "")
     filepath = os.path.join('../data', f"benchmark_source_Nt_{formatted_Nt}.npy")
@@ -64,12 +66,14 @@ def _(Nt, cases, np, os, samples):
     # Check if data is saved and load it, otherwise generate and save
     if os.path.isfile(filepath):
         X = np.load(filepath)
-        print(f"Loaded data for benchmark source")
+        with mo.redirect_stdout():
+            print(f"Loaded data for benchmark source")
     else:
         qs = cases.source(Nt)
         X = np.array([q[-samples:] for q in qs])
         np.save(filepath, X)
-        print(f"Generated and saved data for benchmark source")
+        with mo.redirect_stdout():
+            print(f"Generated and saved data for benchmark source")
 
     nvars = X.shape[0]
     return X, nvars
@@ -88,16 +92,18 @@ def _(X, nbins, np):
 
 
 @app.cell
-def _(X, bins_list, nlag, np, nvars, plt, surd):
+def _(X, bins_list, mo, nlag, np, nvars, plt, surd):
     Rd_results, Sy_results, mi_results, info_leak_results = ({}, {}, {}, {})
     rd_states_results, u_states_results, sy_states_results = ({}, {}, {})
     _fig, axs = plt.subplots(nvars, 2, figsize=(10, 2.6 * nvars), gridspec_kw={'width_ratios': [nvars * 20, 1]})
     for _i in range(nvars):
-        print(f'INFORMATION FLUX FOR SIGNAL {_i + 1}')
+        with mo.redirect_stdout():
+            print(f'INFORMATION FLUX FOR SIGNAL {_i + 1}')
         Y = np.vstack([X[_i, nlag:], X[:, :-nlag]])
         hist, bins_1 = np.histogramdd(Y.T, bins=[bins_list[_i], bins_list[0], bins_list[1], bins_list[2]])
         Rd, Sy, mi, info_leak, rd_states, u_states, sy_states = surd.surd_states(hist)
-        surd.nice_print(Rd, Sy, mi, info_leak)
+        with mo.redirect_stdout():
+            surd.nice_print(Rd, Sy, mi, info_leak)
         _ = surd.plot(Rd, Sy, info_leak, axs[_i, :], nvars, threshold=-0.01)
         axs[_i, 0].set_title(f'${{\\Delta I}}_{{(\\cdot) \\rightarrow {_i + 1}}} / I \\left(Q_{_i + 1}^+ ; \\mathrm{{\\mathbf{{Q}}}} \\right)$', pad=12)
         axs[_i, 1].set_title(f'$\\frac{{{{\\Delta I}}_{{\\mathrm{{leak}} \\rightarrow {_i + 1}}}}}{{H \\left(Q_{_i + 1}^+ \\right)}}$', pad=20)
@@ -112,7 +118,8 @@ def _(X, bins_list, nlag, np, nvars, plt, surd):
         u_states_results[_i + 1] = u_states
         sy_states_results[_i + 1] = sy_states
     plt.tight_layout(w_pad=-12, h_pad=1)
-    plt.show()
+    # plt.show()
+
     return (
         Rd_results,
         Sy_results,

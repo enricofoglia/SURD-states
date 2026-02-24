@@ -13,6 +13,7 @@ dependencies = [
     "fonttools>=4.61.1",
     "importlib-resources>=6.5.2",
     "kiwisolver>=1.4.9",
+    "marimo>=0.20.2",
     "matplotlib>=3.10.8",
     "numpy>=2.4.2",
     "pillow>=12.1.1",
