@@ -33,33 +33,44 @@ for key, value in my_colors.items():
 
 
 def surd_states(p: np.ndarray) -> Tuple[Dict, Dict, Dict, float, float]:
-    '''
-    Decompose the mutual information between a target variable and a set 
-    of agent variables into three terms: Redundancy (I_R), Synergy (I_S), 
-    and Unique (I_U) information.
+    """
+    Decompose the mutual information between a target variable and agent variables.
     
-    The surd function is designed to compute a decomposition of 
-    the mutual information between a target variable T (signal in the future) 
-    and agent variables A (signals in the present). This decomposition results 
-    in terms related to redundancy (overlapping information), synergy 
-    (information that arises only when considering multiple variables together),
-    and unique information.
+    This function decomposes the mutual information between a target variable T 
+    (signal in the future) and agent variables A (signals in the present) into 
+    three terms: Redundancy (I_R), Synergy (I_S), and Unique (I_U) information.
+
+    Parameters
+    ----------
+    p : np.ndarray
+        A multi-dimensional array of the histogram, where the first dimension 
+        represents the target variable, and subsequent dimensions represent 
+        observable variables.
+
+    Returns
+    -------
+    I_R : dict
+        Redundancies and unique information for each variable combination.
+    I_S : dict
+        Synergies for each variable combination.
+    MI : dict
+        Mutual information for each variable combination.
+    info_leak : float
+        Estimation of the information leak
+    Rd_states : dict
+        Redundancy states
+    Un_states : dict
+        Unique information states
+    Sy_states : dict
+        Synergy states
+
+    Examples
+    --------
+    To understand the mutual information between target variable T and 
+    a combination of agent variables A1, A2, and A3:
     
-    Parameters:
-    - p (np.ndarray): A multi-dimensional array of the histogram, where the first dimension 
-      represents the target variable, and subsequent dimensions represent observable variables.
-      
-    Returns:
-    - I_R (dict): Redundancies and unique information for each variable combination.
-    - I_S (dict): Synergies for each variable combination.
-    - MI (dict): Mutual information for each variable combination.
-    - info_leak (float): Estimation of the information leak
-
-    Example: To understand the mutual information between target variable T and 
-    a combination of agent variables A1, A2, and A3, you can use:
-    I_R, I_S, MI, info_leak = surd(p)
-    '''
-
+    >>> I_R, I_S, MI, info_leak, Rd_states, Un_states, Sy_states = surd_states(p)
+    """
     # Ensure no zero values in the probability distribution to avoid NaNs during log computations
     p += 1e-14
     # Normalize the distribution
@@ -232,13 +243,28 @@ def surd_states(p: np.ndarray) -> Tuple[Dict, Dict, Dict, float, float]:
 
 def plot(I_R, I_S, info_leak, axs, nvars, threshold=0):
     """
-    This function computes and plots information flux for given data.
-    :param I_R: Data for redundant contribution
-    :param I_S: Data for synergistic contribution
-    :param axs: Axes for plotting
-    :param colors: Colors for redundant, unique and synergistic contributions
-    :param nvars: Number of variables
-    :param threshold: Threshold as a percentage of the maximum value to select contributions to plot
+    Compute and plot information flux for given data.
+
+    Parameters
+    ----------
+    I_R : dict
+        Data for redundant contribution.
+    I_S : dict
+        Data for synergistic contribution.
+    info_leak : float
+        Information leak value.
+    axs : np.ndarray
+        Axes array for plotting (shape: (nvars, 2)).
+    nvars : int
+        Number of variables.
+    threshold : float, optional
+        Threshold as a percentage of the maximum value to select 
+        contributions to plot (default is 0).
+
+    Returns
+    -------
+    dict
+        Dictionary mapping label keys to normalized values.
     """
     colors = {}
     colors['redundant'] = mcolors.to_rgb('#003049')
@@ -304,9 +330,25 @@ def plot(I_R, I_S, info_leak, axs, nvars, threshold=0):
     return dict(zip(label_keys, values))
 
 
-def nice_print( r_, s_, mi_, leak_ ):
-    '''Print the normalized redundancies, unique and synergy particles'''
+def nice_print(r_, s_, mi_, leak_):
+    """
+    Print the normalized redundancies, unique and synergy particles.
 
+    Parameters
+    ----------
+    r_ : dict
+        Redundancy and unique information values.
+    s_ : dict
+        Synergy values.
+    mi_ : dict
+        Mutual information values.
+    leak_ : float
+        Information leak value.
+
+    Returns
+    -------
+    None
+    """
     r_ = {key: value / max(mi_.values()) for key, value in r_.items()}
     s_ = {key: value / max(mi_.values()) for key, value in s_.items()}
 
@@ -329,7 +371,39 @@ def nice_print( r_, s_, mi_, leak_ ):
 
 
 def run(X, nvars, nlag, nbins, axs):
+    """
+    Run SURD analysis on multivariate signal data.
 
+    Parameters
+    ----------
+    X : np.ndarray
+        Input signal data with shape (nvars, n_samples).
+    nvars : int
+        Number of variables.
+    nlag : int
+        Time lag for constructing the target variable.
+    nbins : int
+        Number of bins for histogram computation.
+    axs : np.ndarray
+        Matplotlib axes array for plotting.
+
+    Returns
+    -------
+    I_R : dict
+        Redundancies and unique information.
+    I_S : dict
+        Synergies.
+    MI : dict
+        Mutual information.
+    info_leak : float
+        Information leak.
+    Rd_states : dict
+        Redundancy states.
+    Un_states : dict
+        Unique information states.
+    Sy_states : dict
+        Synergy states.
+    """
     information_flux = {}
 
     for i in range(nvars):
@@ -364,24 +438,48 @@ def run(X, nvars, nlag, nbins, axs):
 def plot_states(data, bins, target, source, save_path, title,
                 vmax, vmin, xlabel, ylabel, cmap, norm=True, fs=20):
     """
-    Plot a heatmap with marginal histograms on top and right, then save the figure.
+    Plot a heatmap with marginal histograms on top and right.
 
-    Parameters:
-        data (ndarray): 2D array of normalized values to display as heatmap.
-        bins (list of arrays): Bin edges for both heatmap and marginal histograms.
-        target (int): Index of the target variable (1-based).
-        source (int): Index of the source variable (1-based).
-        save_path (str): Path where the figure will be saved.
-        title (str): Title for the top histogram.
-        vmax (float): Maximum value for heatmap color scale.
-        vmin (float): Minimum value for heatmap color scale.
-        xlabel (str): Label for the x-axis of the heatmap.
-        ylabel (str): Label for the y-axis of the heatmap.
-        xlims (list): Limits/ticks for the x-axis histogram.
-        ylims (list): Limits/ticks for the y-axis histogram.
-        cmap (str or Colormap): Colormap for the heatmap.
-        norm (bool): Whether to normalize using a diverging scale centered at zero.
-        fs (int): Font size for labels and titles.
+    Parameters
+    ----------
+    data : np.ndarray
+        2D array of normalized values to display as heatmap.
+    bins : list of np.ndarray
+        Bin edges for both heatmap and marginal histograms.
+    target : int
+        Index of the target variable (1-based).
+    source : int
+        Index of the source variable (1-based).
+    save_path : str
+        Path where the figure will be saved.
+    title : str
+        Title for the top histogram.
+    vmax : float
+        Maximum value for heatmap color scale.
+    vmin : float
+        Minimum value for heatmap color scale.
+    xlabel : str
+        Label for the x-axis of the heatmap.
+    ylabel : str
+        Label for the y-axis of the heatmap.
+    cmap : str or Colormap
+        Colormap for the heatmap.
+    norm : bool, optional
+        Whether to normalize using a diverging scale centered at zero 
+        (default is True).
+    fs : int, optional
+        Font size for labels and titles (default is 20).
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The created figure object.
+    ax_main : matplotlib.axes.Axes
+        Main heatmap axes.
+    ax_top : matplotlib.axes.Axes
+        Top histogram axes.
+    ax_right : matplotlib.axes.Axes
+        Right histogram axes.
     """
     # Sum over axes for marginal histograms
     data_sum_x = data.sum(axis=0)
@@ -455,6 +553,26 @@ def plot_states(data, bins, target, source, save_path, title,
 
 
 def plot_states_3d(data, bins, title, level=0.5, color=my_colors['redundant']):
+    """
+    Plot a 3D isosurface visualization of the data.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        3D array of values for isosurface computation.
+    bins : list of np.ndarray
+        Bin edges for each dimension (x, y, z).
+    title : str
+        Title for the plot.
+    level : float, optional
+        Isosurface level for marching cubes algorithm (default is 0.5).
+    color : tuple
+        RGB color tuple for the isosurface (default is redundant color).
+
+    Returns
+    -------
+    None
+    """
     x_vals, y_vals, z_vals = bins[0], bins[1], bins[2]
     dx = (x_vals[-1] - x_vals[0]) / (len(x_vals) - 1)
     dy = (y_vals[-1] - y_vals[0]) / (len(y_vals) - 1)

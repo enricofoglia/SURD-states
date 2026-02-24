@@ -16,7 +16,7 @@ The method is designed to operate efficiently on standard computing systems. How
 
 ## Getting started
 
-After cloning the repository, you can set up the environment needed to run the scripts successfully by following the instructions below. The python environment is managed using [uv](https://github.com/astral-sh/uv.git), which is a convenient python package and project management tool built in rust. To get started, make sure to have uv installed on your machine. Navigate to the `examples` directory and simply run:
+After cloning the repository, you can set up the environment needed to run the scripts successfully by following the instructions below. The python environment is managed using [uv](https://github.com/astral-sh/uv.git), which is a convenient python package and project management tool built in rust. To get started, make sure to have uv installed on your machine, then navigate to the `examples` directory and simply run:
 
 ```bash
 uv run E01_benchmark_source.py

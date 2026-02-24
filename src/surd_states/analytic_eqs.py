@@ -2,6 +2,23 @@ import numpy as np
 np.random.seed(10)
 
 def source(N):
+    """
+    Generate source signal data.
+
+    Parameters
+    ----------
+    N : int
+        Number of time steps.
+
+    Returns
+    -------
+    q1 : np.ndarray
+        First source variable.
+    q2 : np.ndarray
+        Second source variable.
+    q3 : np.ndarray
+        Third source variable.
+    """
     q1, q2, q3 = np.zeros(N), np.zeros(N), np.zeros(N)
     W1, W2, W3 = np.random.normal(0, 1, N), np.random.normal(-2, 1, N), np.random.normal(2, 1, N)
     for n in range(N-1):
@@ -11,6 +28,23 @@ def source(N):
     return q1, q2, q3
 
 def target(N):
+    """
+    Generate target signal data.
+
+    Parameters
+    ----------
+    N : int
+        Number of time steps.
+
+    Returns
+    -------
+    q1 : np.ndarray
+        First variable.
+    q2 : np.ndarray
+        Second variable.
+    q3 : np.ndarray
+        Third variable.
+    """
     q1, q2, q3 = np.zeros(N), np.zeros(N), np.zeros(N)
     W1, W2, W3 = np.random.normal(0, 1, N), np.random.normal(-2, 1, N), np.random.normal(2, 1, N)
     for n in range(N-1):

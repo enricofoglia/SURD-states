@@ -18,12 +18,16 @@ def myhistogram(x, nbins):
 def mylog(x):
     """
     Compute the logarithm in base 2 avoiding singularities.
-    
-    Parameters:
-    - x (np.array): Input data.
 
-    Returns:
-    - np.array: Logarithm in base 2 of the input.
+    Parameters
+    ----------
+    x : np.ndarray
+        Input data.
+
+    Returns
+    -------
+    np.ndarray
+        Logarithm in base 2 of the input.
     """
     valid_indices = (x != 0) & (~np.isnan(x)) & (~np.isinf(x))
     
@@ -37,11 +41,15 @@ def entropy(p):
     """
     Compute the entropy of a discrete probability distribution function.
 
-    Parameters:
-    - p (np.array): Probability distribution of the signal.
+    Parameters
+    ----------
+    p : np.ndarray
+        Probability distribution of the signal.
 
-    Returns:
-    - float: Entropy of the given distribution.
+    Returns
+    -------
+    float
+        Entropy of the given distribution.
     """
     return -np.sum(p * mylog(p))
 
@@ -50,15 +58,23 @@ def entropy_nvars(p, indices):
     """
     Compute the joint entropy for specific dimensions of a probability distribution.
 
-    Parameters:
-    - p (np.array): N-dimensional joint probability distribution.
-    - indices (tuple): Dimensions over which the entropy is to be computed.
+    Parameters
+    ----------
+    p : np.ndarray
+        N-dimensional joint probability distribution.
+    indices : tuple
+        Dimensions over which the entropy is to be computed.
 
-    Returns:
-    - float: Joint entropy for specified dimensions.
+    Returns
+    -------
+    float
+        Joint entropy for specified dimensions.
 
-    Example: compute the joint entropy H(X0,X3,X7)
-    >>> entropy_nvars(p, (0,3,7))
+    Examples
+    --------
+    Compute the joint entropy H(X0,X3,X7):
+    
+    >>> entropy_nvars(p, (0, 3, 7))
     """
     excluded_indices = tuple(set(range(p.ndim)) - set(indices))
     marginalized_distribution = p.sum(axis=excluded_indices)
@@ -70,15 +86,24 @@ def cond_entropy(p, target_indices, conditioning_indices):
     """
     Compute the conditional entropy between two sets of variables.
 
-    Parameters:
-    - p (np.array): N-dimensional joint probability distribution.
-    - target_indices (tuple): Variables for which entropy is to be computed.
-    - conditioning_indices (tuple): Conditioning variables.
+    Parameters
+    ----------
+    p : np.ndarray
+        N-dimensional joint probability distribution.
+    target_indices : tuple
+        Variables for which entropy is to be computed.
+    conditioning_indices : tuple
+        Conditioning variables.
 
-    Returns:
-    - float: Conditional entropy.
+    Returns
+    -------
+    float
+        Conditional entropy.
 
-    Example: compute the conditional entropy H(X0,X2|X7)
+    Examples
+    --------
+    Compute the conditional entropy H(X0,X2|X7):
+    
     >>> cond_entropy(p, (0, 2), (7,))
     """
     joint_entropy = entropy_nvars(p, set(target_indices) | set(conditioning_indices))
@@ -91,15 +116,24 @@ def mutual_info(p, set1_indices, set2_indices):
     """
     Compute the mutual information between two sets of variables.
 
-    Parameters:
-    - p (np.array): N-dimensional joint probability distribution.
-    - set1_indices (tuple): Indices of the first set of variables.
-    - set2_indices (tuple): Indices of the second set of variables.
+    Parameters
+    ----------
+    p : np.ndarray
+        N-dimensional joint probability distribution.
+    set1_indices : tuple
+        Indices of the first set of variables.
+    set2_indices : tuple
+        Indices of the second set of variables.
 
-    Returns:
-    - float: Mutual information.
+    Returns
+    -------
+    float
+        Mutual information.
 
-    Example: compute the mutual information I(X0,X5;X4,X2)
+    Examples
+    --------
+    Compute the mutual information I(X0,X5;X4,X2):
+    
     >>> mutual_info(p, (0, 5), (4, 2))
     """
     entropy_set1 = entropy_nvars(p, set1_indices)
@@ -113,17 +147,27 @@ def cond_mutual_info(p, ind1, ind2, ind3):
     Compute the conditional mutual information between two sets of variables 
     conditioned to a third set.
 
-    Parameters:
-    - p (np.array): N-dimensional joint probability distribution.
-    - ind1 (tuple): Indices of the first set of variables.
-    - ind2 (tuple): Indices of the second set of variables.
-    - ind3 (tuple): Indices of the conditioning variables.
+    Parameters
+    ----------
+    p : np.ndarray
+        N-dimensional joint probability distribution.
+    ind1 : tuple
+        Indices of the first set of variables.
+    ind2 : tuple
+        Indices of the second set of variables.
+    ind3 : tuple
+        Indices of the conditioning variables.
 
-    Returns:
-    - float: Conditional mutual information.
+    Returns
+    -------
+    float
+        Conditional mutual information.
 
-    Example: compute the conditional mutual information I(X0,X5;X4,X2|X1)
-    cond_mutual_info(p, (0, 5), (4, 2), (1,)))
+    Examples
+    --------
+    Compute the conditional mutual information I(X0,X5;X4,X2|X1):
+    
+    >>> cond_mutual_info(p, (0, 5), (4, 2), (1,))
     """
     # Merge indices of ind2 and ind3
     combined_indices = tuple(set(ind2) | set(ind3))
@@ -133,49 +177,47 @@ def cond_mutual_info(p, ind1, ind2, ind3):
 
 
 def information_flux(p):
-    '''
-    @brief Compute the information flux from N input variables to 
-           a target variable.
+    """
+    Compute the information flux from N input variables to a target variable.
     
-    @details This function computes all possible fluxes combinations 
-             of the N input variables to the target variable, given 
-             the joint pdf of N+1 variables. It evaluates the 
-             conditional entropies to ascertain the flux of information 
-             from various combinations of input variables to the 
-             target variable.
+    This function computes all possible fluxes combinations of the N input 
+    variables to the target variable, given the joint pdf of N+1 variables. 
+    It evaluates the conditional entropies to ascertain the flux of information 
+    from various combinations of input variables to the target variable.
 
-    Usage:
-        T = compute_flux(p)
-    
-    Parameters:
-        p: np.array
-           Multi-dimensional array containing the pdfs of the variables.
-           The first dimension corresponds to the index of the variable:
-                p[0]  -> target variable (in future)
-                p[1:] -> input variables (at present time)
-    
-    Returns:
-        T: dict
-           Dictionary containing all possible fluxes from input variables
-           to the target variable. The key represents a tuple of input 
-           variable indices contributing to the flux, and the associated 
-           value represents the magnitude of the flux from those input 
-           variables to the target variable.
-                T[j] -> flux from tuple j to the target variable.
-    
-    Example:
-        If p is a multi-dimensional array containing the pdfs of the
-        variables, compute_flux(p) will return a dictionary T, where each 
-        key is a tuple representing a combination of input variables, and 
-        the corresponding value represents the information flux from those 
+    Parameters
+    ----------
+    p : np.ndarray
+        Multi-dimensional array containing the pdfs of the variables.
+        The first dimension corresponds to the index of the variable:
+        
+        - p[0]  : target variable (in future)
+        - p[1:] : input variables (at present time)
+
+    Returns
+    -------
+    dict
+        Dictionary containing all possible fluxes from input variables
+        to the target variable. The key represents a tuple of input 
+        variable indices contributing to the flux, and the associated 
+        value represents the magnitude of the flux from those input 
         variables to the target variable.
-    
-    Note:
-        The computed fluxes represent the influence or the contribution 
-        of different combinations of input variables on the target 
-        variable. They are beneficial in analyzing multivariate systems 
-        to understand the interactions and dependencies between variables.
-    '''
+
+    Notes
+    -----
+    The computed fluxes represent the influence or the contribution 
+    of different combinations of input variables on the target 
+    variable. They are beneficial in analyzing multivariate systems 
+    to understand the interactions and dependencies between variables.
+
+    Examples
+    --------
+    If p is a multi-dimensional array containing the pdfs of the
+    variables, information_flux(p) will return a dictionary T, where each 
+    key is a tuple representing a combination of input variables, and 
+    the corresponding value represents the information flux from those 
+    variables to the target variable.
+    """
 
     Np = len(p.shape)  # Number of dimensions in p
     inds = range(1, Np)  # Indices representing input variables
@@ -203,14 +245,21 @@ def transfer_entropy(p, target_var):
     """
     Calculate the transfer entropy from each input variable to the target variable.
 
-    Parameters:
-    - p (np.array): Multi-dimensional array containing the pdfs of the variables.
-      The first dimension corresponds to the index of the variable:
-          p[0]  -> target variable (in future)
-          p[1:] -> input variables (at present time)
+    Parameters
+    ----------
+    p : np.ndarray
+        Multi-dimensional array containing the pdfs of the variables.
+        The first dimension corresponds to the index of the variable:
+        
+        - p[0]  : target variable (in future)
+        - p[1:] : input variables (at present time)
+    target_var : int
+        Index of the target variable.
 
-    Returns:
-    - np.array: Transfer entropy values for each input variable.
+    Returns
+    -------
+    np.ndarray
+        Transfer entropy values for each input variable.
     """
     num_vars = len(p.shape) - 1  # Excluding the future variable
     TE = np.zeros(num_vars)
@@ -244,17 +293,26 @@ def random_permutation(x):
 
 def hist_knn(Y, bins=10, k=5):
     """
-    Estimate the probability density function of Y using a k-nearest neighbors approach and 
-    return a histogram of the estimated densities at the bin centers for each dimension.
+    Estimate the probability density function of Y using k-nearest neighbors.
+    
+    Returns a histogram of the estimated densities at the bin centers for each 
+    dimension.
 
-    Parameters:
-    - Y: np.ndarray, input data array with shape (n_samples, n_features).
-    - k: int, number of nearest neighbors to use for density estimation.
-    - nbins: int, the number of bins for each dimension.
+    Parameters
+    ----------
+    Y : np.ndarray
+        Input data array with shape (n_samples, n_features).
+    bins : int, optional
+        The number of bins for each dimension (default is 10).
+    k : int, optional
+        Number of nearest neighbors to use for density estimation (default is 5).
 
-    Returns:
-    - pdf_grid: np.ndarray, grid of estimated densities at the bin centers.
-    - bin_centers: list of np.ndarray, centers of the bins for each dimension.
+    Returns
+    -------
+    pdf_grid : np.ndarray
+        Grid of estimated densities at the bin centers.
+    bin_centers : list of np.ndarray
+        Centers of the bins for each dimension.
     """
     # Compute bin edges and centers for each dimension
     max_abs = np.percentile(Y, 99.99)
@@ -295,7 +353,23 @@ def hist_knn(Y, bins=10, k=5):
 
     return pdf_grid, bin_centers
 
+
 def generate_loops(Nvars, Nbins):
+    """
+    Generate nested loop code as a string.
+
+    Parameters
+    ----------
+    Nvars : int
+        Number of variables (loop depth).
+    Nbins : int
+        Range for each loop variable.
+
+    Returns
+    -------
+    str
+        String containing the generated loop code.
+    """
     loop_code = ""
     indent = ""
     vars_list = [chr(97 + i) for i in range(Nvars)]  # Generate variable names: t, u, v, ...
