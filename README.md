@@ -29,6 +29,14 @@ The examples are formatted using [marimo](https://docs.marimo.io/), a modern pyt
 uv run marimo edit E01_benchmark_source.py
 ```
 
+To build the html documentation, navigate to the `docs` directory and run:
+
+```bash
+make html
+```
+
+You can now open `docs/build/html/index.html` in most browsers.
+
 ## Citation
 
 If you use our method in your research or software, please cite the following paper:
