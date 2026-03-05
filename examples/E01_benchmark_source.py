@@ -52,7 +52,7 @@ def _():
 def _():
     Nt = 5*10**7            # Number of time steps to perform the integration of the system
     samples = Nt-10000      # Number of samples to be considered (remove the transients)
-    nbins = 51              # Number of bins to disctrize the histogram
+    nbins = 51              # Number of bins to discretize the histogram
     nlag = 1                # Time lag to perform the causal analysis
     return Nt, nbins, nlag, samples
 
