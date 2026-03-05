@@ -16,13 +16,17 @@ The method is designed to operate efficiently on standard computing systems. How
 
 ## Getting started
 
-After cloning the repository, you can set up the environment needed to run the scripts successfully by following the instructions below. You can create an environment using `conda` with all the required packages by running:
-```sh
-conda env create -f environment.yml
+After cloning the repository, you can set up the environment needed to run the scripts successfully by following the instructions below. The python environment is managed using [uv](https://github.com/astral-sh/uv.git), which is a convenient python package and project management tool built in rust. To get started, make sure to have uv installed on your machine, then navigate to the `examples` directory and simply run:
+
+```bash
+uv run E01_benchmark_source.py
 ```
-This command creates a new conda environment and installs the packages as specified in the `environment.yml` file in about 50 seconds. After installing the dependencies, make sure to activate the newly created conda environment with:
-```sh
-conda activate surd
+
+uv will take care of installing all necessary packages and use the correct python version. The first time the code is run, a `.venv` directory is created, and uv will automatically use it as a virtual environment whenever it is invoked. 
+The examples are formatted using [marimo](https://docs.marimo.io/), a modern python notebook format: other than being run as stand alone python packages, the examples can be opened in a browser as if they were jupyter notebooks running:
+
+```bash
+uv run marimo edit E01_benchmark_source.py
 ```
 
 ## Citation

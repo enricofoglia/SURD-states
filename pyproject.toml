@@ -1,0 +1,32 @@
+[project]
+name = "surd-states"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { email = "enricofoglia99@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "contourpy>=1.3.3",
+    "cycler>=0.12.1",
+    "fonttools>=4.61.1",
+    "importlib-resources>=6.5.2",
+    "kiwisolver>=1.4.9",
+    "marimo>=0.20.2",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.2",
+    "pillow>=12.1.1",
+    "pymp-pypi>=0.5.0",
+    "pyparsing>=3.3.2",
+    "python-dateutil>=2.9.0.post0",
+    "scikit-image>=0.26.0",
+    "scikit-learn>=1.8.0",
+    "scipy>=1.17.1",
+    "tqdm>=4.67.3",
+    "zipp>=3.23.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
