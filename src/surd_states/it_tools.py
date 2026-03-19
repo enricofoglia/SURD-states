@@ -30,10 +30,10 @@ def mylog(x):
         Logarithm in base 2 of the input.
     """
     valid_indices = (x != 0) & (~np.isnan(x)) & (~np.isinf(x))
-    
+
     log_values = np.zeros_like(x)
     log_values[valid_indices] = np.log2(x[valid_indices])
-    
+
     return log_values
 
 
@@ -73,7 +73,7 @@ def entropy_nvars(p, indices):
     Examples
     --------
     Compute the joint entropy H(X0,X3,X7):
-    
+
     >>> entropy_nvars(p, (0, 3, 7))
     """
     excluded_indices = tuple(set(range(p.ndim)) - set(indices))
@@ -103,7 +103,7 @@ def cond_entropy(p, target_indices, conditioning_indices):
     Examples
     --------
     Compute the conditional entropy H(X0,X2|X7):
-    
+
     >>> cond_entropy(p, (0, 2), (7,))
     """
     joint_entropy = entropy_nvars(p, set(target_indices) | set(conditioning_indices))
@@ -133,7 +133,7 @@ def mutual_info(p, set1_indices, set2_indices):
     Examples
     --------
     Compute the mutual information I(X0,X5;X4,X2):
-    
+
     >>> mutual_info(p, (0, 5), (4, 2))
     """
     entropy_set1 = entropy_nvars(p, set1_indices)
@@ -144,7 +144,7 @@ def mutual_info(p, set1_indices, set2_indices):
 
 def cond_mutual_info(p, ind1, ind2, ind3):
     """
-    Compute the conditional mutual information between two sets of variables 
+    Compute the conditional mutual information between two sets of variables
     conditioned to a third set.
 
     Parameters
@@ -166,12 +166,12 @@ def cond_mutual_info(p, ind1, ind2, ind3):
     Examples
     --------
     Compute the conditional mutual information I(X0,X5;X4,X2|X1):
-    
+
     >>> cond_mutual_info(p, (0, 5), (4, 2), (1,))
     """
     # Merge indices of ind2 and ind3
     combined_indices = tuple(set(ind2) | set(ind3))
-    
+
     # Compute conditional mutual information
     return cond_entropy(p, ind1, ind3) - cond_entropy(p, ind1, combined_indices)
 
@@ -179,10 +179,10 @@ def cond_mutual_info(p, ind1, ind2, ind3):
 def information_flux(p):
     """
     Compute the information flux from N input variables to a target variable.
-    
-    This function computes all possible fluxes combinations of the N input 
-    variables to the target variable, given the joint pdf of N+1 variables. 
-    It evaluates the conditional entropies to ascertain the flux of information 
+
+    This function computes all possible fluxes combinations of the N input
+    variables to the target variable, given the joint pdf of N+1 variables.
+    It evaluates the conditional entropies to ascertain the flux of information
     from various combinations of input variables to the target variable.
 
     Parameters
@@ -190,7 +190,7 @@ def information_flux(p):
     p : np.ndarray
         Multi-dimensional array containing the pdfs of the variables.
         The first dimension corresponds to the index of the variable:
-        
+
         - p[0]  : target variable (in future)
         - p[1:] : input variables (at present time)
 
@@ -198,46 +198,52 @@ def information_flux(p):
     -------
     dict
         Dictionary containing all possible fluxes from input variables
-        to the target variable. The key represents a tuple of input 
-        variable indices contributing to the flux, and the associated 
-        value represents the magnitude of the flux from those input 
+        to the target variable. The key represents a tuple of input
+        variable indices contributing to the flux, and the associated
+        value represents the magnitude of the flux from those input
         variables to the target variable.
 
     Notes
     -----
-    The computed fluxes represent the influence or the contribution 
-    of different combinations of input variables on the target 
-    variable. They are beneficial in analyzing multivariate systems 
+    The computed fluxes represent the influence or the contribution
+    of different combinations of input variables on the target
+    variable. They are beneficial in analyzing multivariate systems
     to understand the interactions and dependencies between variables.
 
     Examples
     --------
     If p is a multi-dimensional array containing the pdfs of the
-    variables, information_flux(p) will return a dictionary T, where each 
-    key is a tuple representing a combination of input variables, and 
-    the corresponding value represents the information flux from those 
+    variables, information_flux(p) will return a dictionary T, where each
+    key is a tuple representing a combination of input variables, and
+    the corresponding value represents the information flux from those
     variables to the target variable.
     """
 
     Np = len(p.shape)  # Number of dimensions in p
     inds = range(1, Np)  # Indices representing input variables
     p /= p.sum()
-    
+
     T = {}  # Initialize the dictionary to hold the computed fluxes
-    
+
     for i in inds:
         for j in list(icmb(inds, i)):
             noi = tuple(set(inds) - set(j))
-            Hc_j_noi = cond_entropy(p, (0,), noi)  # Conditional entropy with respect to the non-involved variables
-            Hc_j_all = cond_entropy(p, (0,), inds)  # Conditional entropy with respect to all input variables
+            Hc_j_noi = cond_entropy(
+                p, (0,), noi
+            )  # Conditional entropy with respect to the non-involved variables
+            Hc_j_all = cond_entropy(
+                p, (0,), inds
+            )  # Conditional entropy with respect to all input variables
             T[j] = Hc_j_noi - Hc_j_all  # Compute the flux
-    
+
     for i in inds:
         for j in list(icmb(inds, i)):
             # Determine the combinations that need to be subtracted from T[j]
             lj = [list(icmb(j, k)) for k in range(len(j))][1:]
-            T[j] -= sum([T[a] for a in list(ichain.from_iterable(lj))])  # Subtract the computed fluxes to get the final flux for the combination j
-    
+            T[j] -= sum(
+                [T[a] for a in list(ichain.from_iterable(lj))]
+            )  # Subtract the computed fluxes to get the final flux for the combination j
+
     return T  # Return the computed fluxes
 
 
@@ -250,7 +256,7 @@ def transfer_entropy(p, target_var):
     p : np.ndarray
         Multi-dimensional array containing the pdfs of the variables.
         The first dimension corresponds to the index of the variable:
-        
+
         - p[0]  : target variable (in future)
         - p[1:] : input variables (at present time)
     target_var : int
@@ -263,24 +269,27 @@ def transfer_entropy(p, target_var):
     """
     num_vars = len(p.shape) - 1  # Excluding the future variable
     TE = np.zeros(num_vars)
-    
+
     for i in range(1, num_vars + 1):
         # The indices for the present variables
         present_indices = tuple(range(1, num_vars + 1))
-        
+
         # The indices for the present variables excluding the i-th variable
         # conditioning_indices = tuple([target_var] + [j for j in range(1, num_vars + 1) if j != i])
-        conditioning_indices = tuple([target_var] + [j for j in range(1, num_vars + 1) if j != i and j != target_var])
-        
+        conditioning_indices = tuple(
+            [target_var]
+            + [j for j in range(1, num_vars + 1) if j != i and j != target_var]
+        )
+
         # Conditional entropy of the future state of the target variable given its own past
         cond_ent_target_given_past = cond_entropy(p, (0,), conditioning_indices)
-        
+
         # Conditional entropy of the future state of the target variable given its own past and the ith input variable
         cond_ent_target_given_past_and_input = cond_entropy(p, (0,), present_indices)
-        
+
         # Transfer entropy calculation
-        TE[i-1] = cond_ent_target_given_past - cond_ent_target_given_past_and_input
-    
+        TE[i - 1] = cond_ent_target_given_past - cond_ent_target_given_past_and_input
+
     return TE
 
 
@@ -294,8 +303,8 @@ def random_permutation(x):
 def hist_knn(Y, bins=10, k=5):
     """
     Estimate the probability density function of Y using k-nearest neighbors.
-    
-    Returns a histogram of the estimated densities at the bin centers for each 
+
+    Returns a histogram of the estimated densities at the bin centers for each
     dimension.
 
     Parameters
@@ -317,15 +326,17 @@ def hist_knn(Y, bins=10, k=5):
     # Compute bin edges and centers for each dimension
     max_abs = np.percentile(Y, 99.99)
     max_abs = np.floor(max_abs)
-    # max_abs = 5
-    bin_width = 2 * max_abs / (bins-1)  # Calculate the bin width
+    bin_width = 2 * max_abs / (bins - 1)  # Calculate the bin width
 
-    bin_edges = [np.linspace(-max_abs, max_abs + bin_width, bins + 1) for dim in range(Y.shape[1])]
+    bin_edges = [
+        np.linspace(-max_abs, max_abs + bin_width, bins + 1)
+        for dim in range(Y.shape[1])
+    ]
     # bin_edges = [np.linspace(np.min(Y[:, dim]), np.max(Y[:, dim]), bins + 1) for dim in range(Y.shape[1])]
     bin_centers = [0.5 * (edges[:-1] + edges[1:]) for edges in bin_edges]
 
     # Create a grid of all possible combinations of bin centers
-    bin_centers_mesh = np.array(np.meshgrid(*bin_centers, indexing='ij'))
+    bin_centers_mesh = np.array(np.meshgrid(*bin_centers, indexing="ij"))
 
     # Reshape the meshgrid to pass to NearestNeighbors
     bin_centers_flat = bin_centers_mesh.reshape(Y.shape[1], -1).T
@@ -338,12 +349,12 @@ def hist_knn(Y, bins=10, k=5):
     distances, _ = nn.kneighbors(bin_centers_flat)
 
     # Get the distance to the k-th nearest neighbor
-    kth_distances = distances[:, k-1]
+    kth_distances = distances[:, k - 1]
 
     # Compute the volume of the n-dimensional sphere with radius equal to the distance
     n_dimensions = Y.shape[1]
     volume_const = (np.pi ** (n_dimensions / 2)) / math.gamma(n_dimensions / 2 + 1)
-    volumes = volume_const * (kth_distances ** n_dimensions)
+    volumes = volume_const * (kth_distances**n_dimensions)
 
     # Estimate density at each bin center
     pdf = k / (Y.shape[0] * volumes)
@@ -372,15 +383,17 @@ def generate_loops(Nvars, Nbins):
     """
     loop_code = ""
     indent = ""
-    vars_list = [chr(97 + i) for i in range(Nvars)]  # Generate variable names: t, u, v, ...
-    
+    vars_list = [
+        chr(97 + i) for i in range(Nvars)
+    ]  # Generate variable names: t, u, v, ...
+
     # Create nested for loops
     for var in vars_list:
         loop_code += f"{indent}for {var} in range({Nbins}):\n"
         indent += "    "  # Increase indentation
-    
+
     # Add body of the innermost loop
     vars_sum = " + ".join(vars_list)
     loop_code += f"{indent}print('Sum of {', '.join(vars_list)}:', {vars_sum})\n"
-    
+
     return loop_code

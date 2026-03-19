@@ -5,33 +5,32 @@
 
 import sys
 from pathlib import Path
- 
-sys.path.insert(0, str(Path('../src').resolve()))
+
+sys.path.insert(0, str(Path("../src").resolve()))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'surd-states'
-copyright = '2026, Álvaro Martínez Sánchez, Enrico Foglia'
-author = 'Álvaro Martínez Sánchez, Enrico Foglia'
-release = '0.2.0'
+project = "surd-states"
+copyright = "2026, Álvaro Martínez Sánchez, Enrico Foglia"
+author = "Álvaro Martínez Sánchez, Enrico Foglia"
+release = "0.2.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
- 'sphinx.ext.autodoc',
- 'sphinx.ext.autosummary',
- 'sphinx.ext.napoleon',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
